@@ -9,7 +9,8 @@ from flask import render_template, flash, redirect, sessions, url_for, request, 
 from AtelierApp import app, db, lm
 from AtelierApp.forms import LoginForm, ContactForm
 from AtelierApp.decorators import required_roles
-from emails import send_contactForm
+from AtelierApp.models import User
+from AtelierApp.emails import send_contactForm
 
 
 
