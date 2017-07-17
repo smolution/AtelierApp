@@ -50,6 +50,9 @@
     <Compile Include="db_downgrade.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="db_fill.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="db_migrate.py">
       <SubType>Code</SubType>
     </Compile>
@@ -91,6 +94,7 @@
     <Content Include="AtelierApp\static\js\npm.js" />
     <Content Include="AtelierApp\templates\404.html" />
     <Content Include="AtelierApp\templates\500.html" />
+    <Content Include="AtelierApp\templates\admin_gallery.html" />
     <Content Include="AtelierApp\templates\contact-form-mail.html" />
     <Content Include="AtelierApp\templates\contact-form-mail.txt" />
     <Content Include="AtelierApp\templates\contact-form.html" />

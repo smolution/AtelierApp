@@ -74,6 +74,13 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+
+@app.route('/admin/gallery')
+@login_required
+@required_roles('Admin')
+def admin_gallery():
+    return render_template('admin_gallery.html')
+
 @lm.user_loader
 def load_user(id):
     return User.query.get(int(id))

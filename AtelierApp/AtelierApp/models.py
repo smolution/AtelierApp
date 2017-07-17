@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
+
 from AtelierApp import db, lm
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from unidecode import unidecode
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -35,6 +38,11 @@ class User(UserMixin, db.Model):
         except NameError:
             return str(self.id)  # python 3
     
+    @property
+    def is_admin(self):
+        adminRole = Role.query.filter_by(name='Admin').first()
+        return self.role==adminRole
+
     @staticmethod
     def registerAdmin(email, username, password):
         user = User(email=email, username=username)
@@ -76,6 +84,7 @@ class Permission:
     COMMENT = 0x04
     ADMINISTER = 0x80
 
+
 class Photo(db.Model):
     __tablename__ = 'photos'
 
@@ -92,29 +101,98 @@ class Photo(db.Model):
     def __repr__(self):
         return '<Photo %r>' % (self.filename)
 
+
 class Collection(db.Model):
     __tablename__ = 'collections'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True, nullable=False, unique=True)
+    name = db.Column(db.String(64), index=True, unique=True)
+    fullname = db.Column(db.String(64), index=False, unique=True)
     photos = db.relationship('Photo', backref='collection', lazy='dynamic')
 
     def __repr__(self):
         return '<Collection %r>' % (self.name)
 
+    @staticmethod
+    def register(fullname):
+        collection = Collection(fullname=unicode(fullname, 'utf-8'), name = Collection.make_unique_name(fullname))
+        db.session.add(collection)
+        db.session.commit()
+        return collection
+
+    @staticmethod
+    def make_unique_name(fullname):
+        decoded = unidecode(unicode(fullname, 'utf-8'))
+        decoded = '-'.join(decoded.split())
+        if Collection.query.filter_by(name=decoded).first() is None:
+            return decoded
+        version = 2
+        while True:
+            new_name = decoded + str(version)
+            if Collection.query.filter_by(name=new_name).first() is None:
+                break
+            version += 1
+        return new_name
+    
+
 class Category(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True, nullable=False, unique=True)
+    name = db.Column(db.String(64), index=True, unique=True)
+    fullname = db.Column(db.String(64), index=False, unique=True)
     photos = db.relationship('Photo', backref='category', lazy='dynamic')
 
     def __repr__(self):
         return '<Category %r>' % (self.name)
 
+    @staticmethod
+    def register(fullname):
+        collection = Category(fullname=unicode(fullname, 'utf-8'), name = Category.make_unique_name(fullname))
+        db.session.add(collection)
+        db.session.commit()
+        return collection
+
+    @staticmethod
+    def make_unique_name(fullname):
+        decoded = unidecode(unicode(fullname, 'utf-8'))
+        decoded = '-'.join(decoded.split())
+        if Category.query.filter_by(name=decoded).first() is None:
+            return decoded
+        version = 2
+        while True:
+            new_name = decoded + str(version)
+            if Category.query.filter_by(name=new_name).first() is None:
+                break
+            version += 1
+        return new_name
+
+
 class Subcategory(db.Model):
     __tablename__ = 'subcategories'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True, nullable=False, unique=True)
+    name = db.Column(db.String(64), index=True, unique=True)
+    fullname = db.Column(db.String(64), index=False, unique=True)
     photos = db.relationship('Photo', backref='subcategory', lazy='dynamic')
 
     def __repr__(self):
         return '<Subcategory %r>' % (self.name)
+
+    @staticmethod
+    def register(fullname):
+        collection = Subcategory(fullname=unicode(fullname, 'utf-8'), name = Subcategory.make_unique_name(fullname))
+        db.session.add(collection)
+        db.session.commit()
+        return collection
+
+    @staticmethod
+    def make_unique_name(fullname):
+        decoded = unidecode(unicode(fullname, 'utf-8'))
+        decoded = '-'.join(decoded.split())
+        if Subcategory.query.filter_by(name=decoded).first() is None:
+            return decoded
+        version = 2
+        while True:
+            new_name = decoded + str(version)
+            if Subcategory.query.filter_by(name=new_name).first() is None:
+                break
+            version += 1
+        return new_name
