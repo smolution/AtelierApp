@@ -5,5 +5,11 @@
 {% include 'flash.html' %}
 
 BAF!
-
+{% for p in photos %}
+<div class="row">
+    <div class="col-lg-3">
+        <img src="{{url_for('static/photo/thumb', filename=p.filename)}}" />
+    </div>
+</div>
+{% endfor %}
 {% endblock %}

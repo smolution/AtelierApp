@@ -2,14 +2,15 @@
 """
 Routes and views for the flask application.
 """
-
+from os import listdir
+from os.path import isfile, join
 from datetime import datetime
 from flask_login import login_required, login_user, logout_user, current_user
 from flask import render_template, flash, redirect, sessions, url_for, request, g
 from AtelierApp import app, db, lm
 from AtelierApp.forms import LoginForm, ContactForm
 from AtelierApp.decorators import required_roles
-from AtelierApp.models import User
+from AtelierApp.models import User, Photo
 from AtelierApp.emails import send_contactForm
 
 
@@ -79,7 +80,17 @@ def logout():
 @login_required
 @required_roles('Admin')
 def admin_gallery():
-    return render_template('admin_gallery.html')
+    #photo_path = url_for('static', filename='photo/full', _external=True)
+    photo_path = "\\Work\\\Web\\fotosram\\AtelierApp\\AtelierApp\\AtelierApp\\static\\photo\\full"
+    files = [f for f in listdir(photo_path) if isfile(join(photo_path, f))]
+    photos = Photo.query.all()
+    photofiles = [p.filename for p in photos]
+    unregistered_photos = []
+    for f in files:
+        if f not in photofiles:
+            unregistered_photos.append(f)
+    flash(unregistered_photos)
+    return render_template('admin_gallery.html', photos = unregistered_photos)
 
 @lm.user_loader
 def load_user(id):
