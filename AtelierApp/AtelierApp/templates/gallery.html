@@ -1,0 +1,16 @@
+﻿{% extends "layout.html" %}
+
+{% block content %}
+
+{% include 'flash.html' %}
+
+<div class="row">
+    {% for p in photos %}
+    <div class="col-xs-6 col-lg-4">
+        <a class="thumbnail" href="{{url_for('static', filename='photo/full/')}}{{p.filename}}" data-lightbox="lightbox">
+            <img class="img-responsive" src="{{url_for('static', filename='photo/thumb/')}}{{p.filename}}" />
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

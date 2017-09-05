@@ -16,6 +16,7 @@ init
 _GeneratorContextManager
 print_function
 ArgSpec
+iscoroutinefunction
 decorate
 operator
 getfullargspec

@@ -3,6 +3,7 @@ The flask application package.
 """
 
 from flask import Flask
+from flask_debugtoolbar import DebugToolbarExtension
 from flask_login.login_manager import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
@@ -10,7 +11,9 @@ from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_
 
 
 app = Flask(__name__)
+app.debug = True
 app.config.from_object('config')
+toolbar = DebugToolbarExtension(app)
 db = SQLAlchemy(app)
 
 lm = LoginManager()

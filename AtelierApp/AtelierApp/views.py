@@ -8,10 +8,11 @@ from datetime import datetime
 from flask_login import login_required, login_user, logout_user, current_user
 from flask import render_template, flash, redirect, sessions, url_for, request, g
 from AtelierApp import app, db, lm
-from AtelierApp.forms import LoginForm, ContactForm
+from AtelierApp.forms import LoginForm, ContactForm, PhotoForm
 from AtelierApp.decorators import required_roles
-from AtelierApp.models import User, Photo
+from AtelierApp.models import User, Photo, Category, Subcategory, Collection
 from AtelierApp.emails import send_contactForm
+from config import POSTS_PER_PAGE
 
 
 
@@ -76,21 +77,105 @@ def logout():
     return redirect(url_for('index'))
 
 
+@app.route('/gallery/<cat>')
+@app.route('/gallery/<cat>/<int:page>')
+@app.route('/gallery/<cat>/<subcat>')
+@app.route('/gallery/<cat>/<subcat>/<int:page>')
+def gallery(cat, subcat=None, page=1):
+    category = Category.query.filter_by(name = cat).first()
+    title = category.fullname
+    if subcat:
+        subcategory = Subcategory.query.filter_by(name = subcat).first()
+        phs = Photo.query.filter_by(category_id = category.id, subcategory_id = subcategory.id).all()
+        title = title + ' - ' + subcategory.fullname
+    else:
+        phs = Photo.query.filter_by(category_id = category.id).paginate(page, POSTS_PER_PAGE, False).items
+    photos = []
+    for p in phs:
+        if p.active:
+            photos.append({'filename': p.filename, 'filepath': p.filepath, 'featured': p.featured})    
+    return render_template('gallery.html', photos=photos, title=title, year=datetime.now().year)
+
+@app.route('/admin/gallery/add', methods=['GET', 'POST'])
+@login_required
+@required_roles('Admin')
+def add_to_gallery():
+    #photo_path = url_for('static', filename='photo/full', _external=True)
+    photo_path = "\\Work\\Web\\fotosram\\AtelierApp\\AtelierApp\\AtelierApp\\static\\photo\\full"
+    files = [f for f in listdir(photo_path) if isfile(join(photo_path, f))] # list of files in directory
+    photos = Photo.query.all()  # list of photos in database
+    photofiles = [p.filename for p in photos]   # list of filenames from photos
+    unregistered_photos = [] # empty list of photos that are not in database
+    for f in files:
+        if f not in photofiles:
+            unregistered_photos.append(f)
+    forms = []
+    for up in unregistered_photos:
+        f = PhotoForm(prefix=up)
+        f.category.query = Category.query.order_by(Category.fullname)
+        f.subcategory.query = Subcategory.query.order_by(Subcategory.fullname)
+        f.collection.query = Collection.query.order_by(Collection.fullname)
+        f.filename.data = up
+        forms.append(f)
+    for f in forms:
+        if f.validate_on_submit():
+            photo = Photo(filename=f.filename.data,
+                          filepath=photo_path,
+                          slideshow=f.slideshow.data,
+                          active=f.active.data,
+                          featured=f.featured.data,
+                          category = f.category.data,
+                          subcategory=f.subcategory.data,
+                          collection=f.collection.data)
+
+            flash('%s validated' % str(photo))
+            db.session.add(photo)
+            db.session.commit()
+            return redirect(url_for('add_to_gallery', **request.args))
+    return render_template('add-to-gallery.html', photos_forms=zip(unregistered_photos, forms))
+
 @app.route('/admin/gallery')
 @login_required
 @required_roles('Admin')
 def admin_gallery():
-    #photo_path = url_for('static', filename='photo/full', _external=True)
-    photo_path = "\\Work\\\Web\\fotosram\\AtelierApp\\AtelierApp\\AtelierApp\\static\\photo\\full"
-    files = [f for f in listdir(photo_path) if isfile(join(photo_path, f))]
-    photos = Photo.query.all()
-    photofiles = [p.filename for p in photos]
-    unregistered_photos = []
-    for f in files:
-        if f not in photofiles:
-            unregistered_photos.append(f)
-    flash(unregistered_photos)
-    return render_template('admin_gallery.html', photos = unregistered_photos)
+    phs = Photo.query.join(Category).join(Subcategory).order_by(Photo.active.desc()).all()
+    photos = []
+    for p in phs:
+        photos.append({'filename': p.filename,
+                      'filepath': p.filepath,
+                      'active': p.active,
+                      'slideshow': p.slideshow,
+                      'featured': p.featured,
+                      'category': p.category.fullname,
+                      'subcategory': p.subcategory.fullname,
+                      'collection': None,
+                      'id': p.id
+                     })
+    return render_template('admin-gallery.html', photos=photos, title=u'Správa fotografií', year=datetime.now().year)
+
+@app.route('/admin/gallery/photo/<int:id>', methods=['GET', 'POST'])
+@login_required
+@required_roles('Admin')
+def edit_photo(id):
+    p = Photo.query.filter_by(id=id).first()
+    f=PhotoForm(obj=p)
+    f.category.query = Category.query.order_by(Category.fullname)
+    f.subcategory.query = Subcategory.query.order_by(Subcategory.fullname)
+    f.collection.query = Collection.query.order_by(Collection.fullname)
+
+    if f.validate_on_submit():
+        p.slideshow=f.slideshow.data
+        p.active=f.active.data
+        p.featured=f.featured.data
+        p.category = f.category.data
+        p.subcategory=f.subcategory.data
+        p.collection=f.collection.data
+
+        flash('%s upraven' % str(p))
+        db.session.commit()
+        return redirect(url_for('admin_gallery', **request.args))
+
+    return render_template('edit-photo.html', photo=p, form=f, title=p.filename, year=datetime.now().year)
 
 @lm.user_loader
 def load_user(id):

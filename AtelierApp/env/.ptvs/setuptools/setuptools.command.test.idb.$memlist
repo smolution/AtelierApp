@@ -1,4 +1,5 @@
 sys
+test
 working_set
 map
 resource_exists
@@ -12,7 +13,7 @@ itertools
 require
 EntryPoint
 normalize_path
-test
+evaluate_marker
 Command
 TestLoader
 log

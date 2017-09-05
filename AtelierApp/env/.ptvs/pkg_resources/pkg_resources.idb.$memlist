@@ -30,6 +30,8 @@ load_entry_point
 EggInfoDistribution
 importlib_machinery
 DistributionNotFound
+_always_object
+py31compat
 _remove_md5_fragment
 filter
 _macosx_vers
@@ -47,6 +49,7 @@ os
 _sget_object
 ResolutionError
 SOURCE_DIST
+_is_egg_path
 EGG_DIST
 MemoizedZipManifests
 rename
@@ -128,7 +131,7 @@ to_filename
 get_build_platform
 os_open
 DEVELOP_DIST
-_get_mro
+inspect
 get_default_cache
 get_platform
 urllib

@@ -123,6 +123,7 @@ class Collection(db.Model):
     def make_unique_name(fullname):
         decoded = unidecode(unicode(fullname, 'utf-8'))
         decoded = '-'.join(decoded.split())
+        decoded = decoded.lower()
         if Collection.query.filter_by(name=decoded).first() is None:
             return decoded
         version = 2
@@ -155,6 +156,7 @@ class Category(db.Model):
     def make_unique_name(fullname):
         decoded = unidecode(unicode(fullname, 'utf-8'))
         decoded = '-'.join(decoded.split())
+        decoded = decoded.lower()
         if Category.query.filter_by(name=decoded).first() is None:
             return decoded
         version = 2
@@ -187,6 +189,7 @@ class Subcategory(db.Model):
     def make_unique_name(fullname):
         decoded = unidecode(unicode(fullname, 'utf-8'))
         decoded = '-'.join(decoded.split())
+        decoded = decoded.lower()
         if Subcategory.query.filter_by(name=decoded).first() is None:
             return decoded
         version = 2

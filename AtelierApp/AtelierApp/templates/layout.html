@@ -7,10 +7,11 @@
     <title>{{ title }} - Fotošrám</title>
     <link href={{url_for('static', filename = 'css/bootstrap.min.css')}} rel="stylesheet">
     <link href={{url_for('static', filename = 'css/bootstrap-theme.min.css')}} rel="stylesheet">
+    <link href={{url_for('static', filename = 'css/lightbox.css')}} rel="stylesheet">
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src={{url_for('static', filename = 'js/bootstrap.min.js')}}></script>
-    
-    
+    <script src={{url_for('static', filename = 'js/lightbox.js')}}></script>
+
 </head>
 
 <body>
@@ -36,8 +37,8 @@
                             <li class="dropdown">
                                 <a class="dropdown-toggle" href="#" data-toggle="dropdown">Galerie</a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{{ url_for('index') }}">Interiér</a></li>
-                                    <li><a href="{{ url_for('about') }}">Exteriér</a></li>
+                                    <li><a href="{{ url_for('gallery', cat='interier') }}">Interiér</a></li>
+                                    <li><a href="{{ url_for('gallery', cat='exterier2') }}">Exteriér</a></li>
                                 </ul>
                             </li>
                             <li><a href="{{ url_for('about') }}">Termíny focení</a></li>
@@ -57,7 +58,8 @@
                             <li class="dropdown">
                                 <a class="dropdown-toggle" href="#" data-toggle="dropdown">Administrace</a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{{ url_for('admin_gallery') }}">Galerie</a></li>
+                                    <li><a href="{{ url_for('admin_gallery') }}">Spravovat galerie</a></li>
+                                    <li><a href="{{ url_for('add_to_gallery') }}">Přidat fotografie</a></li>
                                     <li class="disabled"><a>---</a></li>
                                     <li class="disabled">...</li>
                                 </ul>
