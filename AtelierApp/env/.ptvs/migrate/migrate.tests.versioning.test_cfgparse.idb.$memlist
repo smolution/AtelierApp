@@ -1,9 +1,9 @@
 logging
-exceptions
 TestConfigParser
 log
 len
 Changeset
+TempitaTemplate
 version
 cfgparse
 pathed

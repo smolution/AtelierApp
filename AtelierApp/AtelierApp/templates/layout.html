@@ -33,7 +33,6 @@
                     </div>
                     <div id="navbar" class="navbar-collapse collapse">
                         <ul class="nav navbar-nav pull-left">
-                            <li><a href="{{ url_for('index') }}">Home</a></li>
                             <li class="dropdown">
                                 <a class="dropdown-toggle" href="#" data-toggle="dropdown">Galerie</a>
                                 <ul class="dropdown-menu">
@@ -41,15 +40,8 @@
                                     <li><a href="{{ url_for('gallery', cat='exterier2') }}">Exteriér</a></li>
                                 </ul>
                             </li>
-                            <li><a href="{{ url_for('about') }}">Termíny focení</a></li>
-                            <li><a href="{{ url_for('about') }}">Příprava na focení</a></li>
-                            <li class="dropdown">
-                                <a class="dropdown-toggle" href="#" data-toggle="dropdown">Ceník</a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{{ url_for('index') }}">Ateliér</a></li>
-                                    <li><a href="{{ url_for('about') }}">Svatby</a></li>
-                                </ul>
-                            </li>
+                            <li><a href="{{ url_for('events') }}">Termíny focení</a></li>
+                            <li><a href="{{ url_for('prizes') }}">Ceny focení</a></li>
                             <li><a href="{{ url_for('contact') }}">Kontakt</a></li>
                         </ul>
                         <ul class="nav navbar-nav pull-right">
@@ -60,8 +52,9 @@
                                 <ul class="dropdown-menu">
                                     <li><a href="{{ url_for('admin_gallery') }}">Spravovat galerie</a></li>
                                     <li><a href="{{ url_for('add_to_gallery') }}">Přidat fotografie</a></li>
-                                    <li class="disabled"><a>---</a></li>
-                                    <li class="disabled">...</li>
+                                    <li><hr /></li>
+                                    <li><a href="{{ url_for('admin_events') }}">Spravovat události</a></li>
+                                    <li><a href="{{ url_for('add_event') }}">Přidat událost</a></li>
                                 </ul>
                             </li>
                             {% endif %}

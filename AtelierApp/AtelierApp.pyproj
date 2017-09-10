@@ -94,15 +94,24 @@
     <Content Include="AtelierApp\static\js\npm.js" />
     <Content Include="AtelierApp\templates\404.html" />
     <Content Include="AtelierApp\templates\500.html" />
+    <Content Include="AtelierApp\templates\add-event.html" />
     <Content Include="AtelierApp\templates\add-to-gallery.html" />
+    <Content Include="AtelierApp\templates\admin-events.html" />
     <Content Include="AtelierApp\templates\admin-gallery.html" />
+    <Content Include="AtelierApp\templates\apply-event.html" />
     <Content Include="AtelierApp\templates\contact-form-mail.html" />
     <Content Include="AtelierApp\templates\contact-form-mail.txt" />
     <Content Include="AtelierApp\templates\contact-form.html" />
+    <Content Include="AtelierApp\templates\edit-event.html" />
     <Content Include="AtelierApp\templates\edit-photo.html" />
+    <Content Include="AtelierApp\templates\event-form-mail.html" />
+    <Content Include="AtelierApp\templates\event-form-mail.txt" />
+    <Content Include="AtelierApp\templates\event.html" />
+    <Content Include="AtelierApp\templates\events.html" />
     <Content Include="AtelierApp\templates\flash.html" />
     <Content Include="AtelierApp\templates\gallery.html" />
     <Content Include="AtelierApp\templates\login.html" />
+    <Content Include="AtelierApp\templates\prizes.html" />
     <Content Include="requirements.txt" />
     <Content Include="AtelierApp\templates\about.html" />
     <Content Include="AtelierApp\templates\contact.html" />
@@ -110,6 +119,15 @@
     <Content Include="AtelierApp\templates\layout.html" />
   </ItemGroup>
   <ItemGroup>
+    <Interpreter Include="env36\">
+      <Id>env36</Id>
+      <Version>3.6</Version>
+      <Description>env36 (Python 3.6 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
     <Interpreter Include="env\">
       <Id>env</Id>
       <Version>2.7</Version>

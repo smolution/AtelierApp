@@ -1,0 +1,8 @@
+unidecode_expect_nonascii
+_unidecode
+_warn_if_not_unicode
+warnings
+unidecode
+Cache
+version_info
+unidecode_expect_ascii

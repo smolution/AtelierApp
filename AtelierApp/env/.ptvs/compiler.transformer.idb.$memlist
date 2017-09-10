@@ -28,6 +28,7 @@ token
 GenExprFor
 k
 SetComp
+name
 Ellipsis
 AssName
 IfExp

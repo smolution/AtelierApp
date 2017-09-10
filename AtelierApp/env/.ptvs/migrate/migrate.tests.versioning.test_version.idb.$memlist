@@ -13,7 +13,6 @@ Extensions
 logging
 str
 DatabaseAlreadyControlledError
-exceptions
 int
 fixture
 isinstance

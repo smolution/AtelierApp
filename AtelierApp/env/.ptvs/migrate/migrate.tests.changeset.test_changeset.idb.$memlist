@@ -64,7 +64,6 @@ InvalidVersionError
 warnings
 ScriptError
 True
-changeset
 DatabaseNotControlledError
 schema
 re

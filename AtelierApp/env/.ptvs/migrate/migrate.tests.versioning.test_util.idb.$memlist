@@ -5,7 +5,6 @@ issubclass
 KeyedInstance
 str
 decorator
-exceptions
 int
 fixture
 True
@@ -32,3 +31,4 @@ TestUtil
 asbool
 load_model
 catch_warnings
+EntryPoint

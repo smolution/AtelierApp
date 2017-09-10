@@ -4,6 +4,7 @@ from AtelierApp import db, lm
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from unidecode import unidecode
+from sqlalchemy_utils import aggregated
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -199,3 +200,36 @@ class Subcategory(db.Model):
                 break
             version += 1
         return new_name
+
+class Event(db.Model):
+    __tablename__ = 'events'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True, nullable=False)
+    description = db.Column(db.Text)
+    location = db.Column(db.String(256))
+    date = db.Column(db.Date, nullable=False)
+    time = db.Column(db.Time)
+    capacity = db.Column(db.Integer)
+    active = db.Column(db.Boolean, default=True)
+    customers = db.relationship('Customer', backref='customer', lazy='dynamic')
+
+    @aggregated('customers', db.Column(db.Integer))
+    def customers_count(self):
+        return db.func.count()
+    
+    def __repr__(self):
+        return '<Event %r>' % (self.name)
+
+class Customer(db.Model):
+    __tablename__ = 'customers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+    email = db.Column(db.String(64))
+    phone = db.Column(db.String(16))
+    message = db.Column(db.Text)
+    event_id = db.Column(db.Integer, db.ForeignKey('events.id'))
+
+    def __repr__(self):
+        return '<Customer %r>' % (self.email)

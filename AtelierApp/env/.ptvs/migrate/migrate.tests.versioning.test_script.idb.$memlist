@@ -36,3 +36,4 @@ asbool
 TestBaseScript
 importpath
 load_model
+EntryPoint

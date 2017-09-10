@@ -8,9 +8,9 @@ from datetime import datetime
 from flask_login import login_required, login_user, logout_user, current_user
 from flask import render_template, flash, redirect, sessions, url_for, request, g
 from AtelierApp import app, db, lm
-from AtelierApp.forms import LoginForm, ContactForm, PhotoForm
+from AtelierApp.forms import LoginForm, ContactForm, PhotoForm, EventForm, EventContactForm
 from AtelierApp.decorators import required_roles
-from AtelierApp.models import User, Photo, Category, Subcategory, Collection
+from AtelierApp.models import User, Photo, Category, Subcategory, Collection, Event, Customer
 from AtelierApp.emails import send_contactForm
 from config import POSTS_PER_PAGE
 
@@ -21,11 +21,13 @@ from config import POSTS_PER_PAGE
 @app.route('/index')
 def index():
     """Renders the home page."""
-    user = g.user
+    slideshow = Photo.query.filter_by(slideshow=True).all()
+    
     return render_template(
         'index.html',
         title='Home Page',
-        year=datetime.now().year,
+        photos=slideshow,
+        year=datetime.now().year
     )
 
 @app.route('/contact', methods=['GET', 'POST'])
@@ -40,6 +42,14 @@ def contact():
         title='Kontakt',
         year=datetime.now().year,
         form=form
+    ).encode("utf-8")
+
+@app.route('/prizes')
+def prizes():
+    return render_template(
+        'prizes.html',
+        title=u'Ceny focení',
+        year=datetime.now().year,
     )
 
 @app.route('/about')
@@ -83,6 +93,7 @@ def logout():
 @app.route('/gallery/<cat>/<subcat>/<int:page>')
 def gallery(cat, subcat=None, page=1):
     category = Category.query.filter_by(name = cat).first()
+    subcategories = []
     title = category.fullname
     if subcat:
         subcategory = Subcategory.query.filter_by(name = subcat).first()
@@ -91,10 +102,16 @@ def gallery(cat, subcat=None, page=1):
     else:
         phs = Photo.query.filter_by(category_id = category.id).paginate(page, POSTS_PER_PAGE, False).items
     photos = []
+    tmp = []
     for p in phs:
         if p.active:
-            photos.append({'filename': p.filename, 'filepath': p.filepath, 'featured': p.featured})    
-    return render_template('gallery.html', photos=photos, title=title, year=datetime.now().year)
+            if(p.subcategory not in tmp):
+                tmp.append(p.subcategory)
+            photos.append({'filename': p.filename, 'filepath': p.filepath, 'featured': p.featured})
+    if not subcat:
+        for t in tmp:
+            subcategories.append({'fullname': t.fullname, 'name': t.name})
+    return render_template('gallery.html', photos=photos, category=category.name, subcategories=subcategories, title=title, year=datetime.now().year)
 
 @app.route('/admin/gallery/add', methods=['GET', 'POST'])
 @login_required
@@ -153,7 +170,7 @@ def admin_gallery():
                      })
     return render_template('admin-gallery.html', photos=photos, title=u'Správa fotografií', year=datetime.now().year)
 
-@app.route('/admin/gallery/photo/<int:id>', methods=['GET', 'POST'])
+@app.route('/admin/gallery/photo/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
 @required_roles('Admin')
 def edit_photo(id):
@@ -171,11 +188,109 @@ def edit_photo(id):
         p.subcategory=f.subcategory.data
         p.collection=f.collection.data
 
-        flash('%s upraven' % str(p))
         db.session.commit()
+        flash('%s upraven' % str(p))
         return redirect(url_for('admin_gallery', **request.args))
 
     return render_template('edit-photo.html', photo=p, form=f, title=p.filename, year=datetime.now().year)
+
+
+@app.route('/events')
+def events():
+    evs = Event.query.filter_by(active=True).order_by(Event.date.asc()).all()
+    events = []
+    for e in evs:
+        events.append({'name': e.name,
+                      'description': e.description,
+                      'active': e.active,
+                      'location': e.location,
+                      'date': e.date,
+                      'time': e.time,
+                      'capacity': e.capacity,
+                      'free': '',
+                      'id': e.id
+                     })
+    return render_template('events.html', events=events, title=u'Správa událostí', year=datetime.now().year)
+
+
+@app.route('/events/<int:id>', methods=['GET', 'POST'])
+def apply_event(id):
+    event = Event.query.filter_by(id=id).first()
+    form = EventContactForm()
+    if form.validate_on_submit():
+        customer = Customer(name=form.name.data + ' ' + form.surname.data,
+                            email=form.email.data,
+                            phone=form.telephone.data,
+                            message=form.message.data,
+                            event_id=event.id)
+        db.session.add(customer)
+        db.session.commit()
+        flash(u'Děkujeme za Váš zájem o naše služby. Brzy se Vám ozveme.')
+        send_contactForm(form)
+        return redirect(url_for('index'))
+    return render_template('apply-event.html', event=event, form=form, title=event.name, year=datetime.now().year)
+
+
+
+@app.route('/admin/events')
+@login_required
+@required_roles('Admin')
+def admin_events():
+    evs = Event.query.order_by(Event.active.desc()).all()
+    events = []
+    for e in evs:
+        events.append({'name': e.name,
+                      'description': e.description,
+                      'active': e.active,
+                      'location': e.location,
+                      'date': e.date,
+                      'time': e.time,
+                      'capacity': e.capacity,
+                      'free': e.capacity-e.customers.count(),
+                      'id': e.id
+                     })
+    return render_template('admin-events.html', events=events, title=u'Správa událostí', year=datetime.now().year)
+
+
+@app.route('/admin/events/add', methods=['GET', 'POST'])
+@login_required
+@required_roles('Admin')
+def add_event():
+    f = EventForm()
+    if f.validate_on_submit():
+        event = Event(name = f.name.data,
+                      description = f.description.data,
+                      location = f.location.data,
+                      date =  f.date.data,
+                      time = f.time.data,
+                      capacity = f.capacity.data,
+                      active = f.active.data)
+        db.session.add(event)
+        db.session.commit()
+        flash(u'Vytvořena událost %s' % str(event))
+        return redirect(url_for('admin_events', **request.args))
+    return render_template('add-event.html', form = f, title=u'Přidání události', year=datetime.now().year)
+
+
+@app.route('/admin/events/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+@required_roles('Admin')
+def edit_event(id):
+    event = Event.query.filter_by(id=id).first()
+    f = EventForm(obj=event)
+    if f.validate_on_submit():
+        event.name = f.name.data
+        event.description = f.description.data
+        event.location = f.location.data
+        event.date =  f.date.data
+        event.time = f.time.data
+        event.capacity = f.capacity.data
+        event.active = f.active.data
+        
+        db.session.commit()
+        flash(u'Událost %s změněna' % str(event))
+        return redirect(url_for('admin_events', **request.args))
+    return render_template('edit-event.html', form = f, title=u'Editace události', year=datetime.now().year)
 
 @lm.user_loader
 def load_user(id):

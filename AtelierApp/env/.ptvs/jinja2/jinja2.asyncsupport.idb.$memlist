@@ -6,7 +6,6 @@ Macro
 _invoke
 internalcode
 generate_async
-patch_all
 length
 Template
 make_module_async
