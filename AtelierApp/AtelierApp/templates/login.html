@@ -9,10 +9,10 @@
     <form class="form-horizontal" method="post" name="login">
         {{ form.hidden_tag() }}
         <fieldset>
-            <legend>Please Sign In</legend>
+            <legend>Přihlašte se</legend>
             <div class="form-group">
-                <label class="control-label col-sm-2" for="email">Email:</label>
-                <div class="col-sm-2">
+                <label class="control-label col-3" for="email">Email:</label>
+                <div class="col-3">
                     {{ form.email(class="form-control", placeholder="Email") }}
                 </div>
                 {% for error in form.email.errors %}
@@ -20,9 +20,9 @@
                 {% endfor %}
             </div>
             <div class="form-group">
-                <label class="control-label col-sm-2" for="password">Password:</label>
-                <div class="col-sm-2">
-                    {{ form.password(class="form-control col-sm-2", placeholder="Password") }}
+                <label class="control-label col-3" for="password">Heslo:</label>
+                <div class="col-3">
+                    {{ form.password(class="form-control", placeholder="Password") }}
                 </div>
                 {% for error in form.password.errors %}
                 <span style="color: red;">[{{ error }}]</span>
@@ -32,13 +32,13 @@
                 <div class="col-lg-offset-2">
                     <label class="checkbox" for="remember_me">
 
-                        {{ form.remember_me }} Remember Me
+                        {{ form.remember_me }} Pamatovat si mě
                     </label>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-lg-offset-1">
-                    <input class="btn btn-primary" type="submit" value="Sign In">
+                    <input class="btn btn-light" type="submit" value="Přihlásit">
                 </div>
             </div>
         </fieldset>

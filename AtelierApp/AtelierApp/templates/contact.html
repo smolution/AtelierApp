@@ -2,20 +2,24 @@
 
 {% block content %}
 
-<h2>{{ title }}</h2>
 
-<address>
-    Jana Šrámková<br />
-    Adresa 666<br />
-    <abbr title="Telefon">Tel:</abbr>
-    +420 123 456 789
-</address>
+        <p class="lead text-justify">
+            Fotografování jsem se začala věnovat na vysoké škole, při cestách po Asii. Nejdříve jsem fotila jen svou rodinu a kamarády. Fotografování bylo stále víc a víc a tak jsem se rozhodla se do toho ponořit na plno. Jsem maminka dvou malých raubířů, Filipa a Jakuba, kteří jsou mojí inspirací pro nová témata. Miluji fotografii a snažím se v ní každý den zdokonalovat a hledat nové pohledy na obyčejné věci.
+        </p>
+    <h2>{{ title }}</h2>
 
-<address>
-    <strong>Email:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-    <strong>Něco dalšího:</strong> <a href="mailto:pipa@example.com">pípa@example.com</a>
-</address>
+    <address>
+        Jana Šrámková<br />
+        Adresa 666<br />
+        <abbr title="Telefon">Tel:</abbr>
+        +420 123 456 789
+    </address>
 
-{% include "contact-form.html" %}
-
+    <address>
+        <strong>Email:</strong>   <a class="text-secondary" href="mailto:Support@example.com">Support@example.com</a><br />
+        <strong>Něco dalšího:</strong> <a class="text-secondary" href="mailto:pipa@example.com">pípa@example.com</a>
+    </address>
+<div class="container">
+    {% include "contact-form.html" %}
+</div>
 {% endblock %}

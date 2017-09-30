@@ -3,9 +3,14 @@
 {% block content %}
 
 {% include 'flash.html' %}
-
-{% for event in events %}
-{% include 'event.html' %}
-{% endfor %}
+{% if events %}
+    {% for event in events %}
+        {% include 'event.html' %}
+    {% endfor %}
+{% else %}
+<p class="lead text-justify">
+    Momentálně nejsou vypsané žádné termíny focení.
+</p>
+{% endif %}
 
 {% endblock %}

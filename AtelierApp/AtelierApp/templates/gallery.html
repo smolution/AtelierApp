@@ -4,29 +4,34 @@
 
 {% include 'flash.html' %}
 {% if subcategories %}
-<div class="row">
-    <ol class="breadcrumb">
+
+    <nav class="nav">
         {% for s in subcategories %}
-        <li class="breadcrumb-item"><a href="{{url_for('gallery', cat=category, subcat=s.name)}}">{{s.fullname}}</a></li>
+        <a class="breadcrumb-item text-secondary" href="{{url_for('gallery', cat=category.name, subcat=s.name)}}">{{s.fullname}}</></a>
         {% endfor %}
-    </ol>
-</div>
+    </nav>
+{% else %}
+    <nav class="nav">
+        <a class="breadcrumb-item text-secondary" href="{{url_for('gallery', cat=category.name)}}">{{category.fullname}}</></a>    
+    </nav>
 {% endif %}
-<div class="row">
-    {% for p in photos %}
-    {% if p.featured %}
-    <div class="col-xs-12 col-lg-12">
-        <a class="thumbnail" href="{{url_for('static', filename='photo/full/')}}{{p.filename}}" data-lightbox="lightbox">
-            <img class="img-responsive" src="{{url_for('static', filename='photo/thumb/featured/')}}{{p.filename}}" />
-        </a>
+<div class="my-2">
+    <div class="row">
+        {% for p in photos %}
+        {% if p.featured %}
+        <div class="col-12 my-3">
+            <a href="{{url_for('static', filename='photo/full/')}}{{p.filename}}" data-lightbox="lightbox">
+                <img class="img-fluid" src="{{url_for('static', filename='photo/featured/')}}{{p.filename}}" />
+            </a>
+        </div>
+        {% else %}
+        <div class="col-sm-12 col-md-6 col-lg-4 my-3">
+            <a href="{{url_for('static', filename='photo/full/')}}{{p.filename}}" data-lightbox="lightbox">
+                <img class="img-fluid" src="{{url_for('static', filename='photo/thumb/')}}{{p.filename}}" />
+            </a>
+        </div>
+        {% endif %}
+        {% endfor %}
     </div>
-    {% else %}
-    <div class="col-xs-6 col-lg-4">
-        <a class="thumbnail" href="{{url_for('static', filename='photo/full/')}}{{p.filename}}" data-lightbox="lightbox">
-            <img class="img-responsive" src="{{url_for('static', filename='photo/thumb/')}}{{p.filename}}" />
-        </a>
-    </div>
-    {% endif %}
-    {% endfor %}
 </div>
 {% endblock %}

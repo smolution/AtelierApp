@@ -13,8 +13,10 @@ from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_
 app = Flask(__name__)
 app.debug = True
 app.config.from_object('config')
-toolbar = DebugToolbarExtension(app)
+#toolbar = DebugToolbarExtension(app)
 db = SQLAlchemy(app)
+db.pool_recycle=280
+
 
 lm = LoginManager()
 lm.init_app(app)

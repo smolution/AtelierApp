@@ -13,6 +13,7 @@ from AtelierApp.decorators import required_roles
 from AtelierApp.models import User, Photo, Category, Subcategory, Collection, Event, Customer
 from AtelierApp.emails import send_contactForm
 from config import POSTS_PER_PAGE
+from sqlalchemy.sql.expression import func
 
 
 
@@ -46,11 +47,44 @@ def contact():
 
 @app.route('/prizes')
 def prizes():
+    imgs = []
+    cat_int = Category.query.filter_by(name = 'interier').first()
+    cat_ext = Category.query.filter_by(name = 'exterier2').first()
+    cat_svt = Category.query.filter_by(name = 'svatby').first()
+    imgs.append(Photo.query.filter_by(category_id = cat_int.id, active = True).order_by(func.random()).first())
+    imgs.append(Photo.query.filter_by(category_id = cat_ext.id, active = True).order_by(func.random()).first())
+    imgs.append(Photo.query.filter_by(category_id = cat_svt.id, active = True).order_by(func.random()).first())
     return render_template(
         'prizes.html',
         title=u'Ceny focení',
+        images = imgs,
         year=datetime.now().year,
     )
+@app.route('/prizes-exterier')
+def prizes_exterier():
+    return render_template(
+        'prizes-exterier.html',
+        title=u'Ceny focení - Exteriér',
+        year=datetime.now().year,
+    )
+
+@app.route('/prizes-exterier')
+def prizes_interier():
+    return render_template(
+        'prizes-interier.html',
+        title=u'Ceny focení - Exteriér',
+        year=datetime.now().year,
+    )
+
+@app.route('/prizes-svatby')
+def prizes_svatby():
+    return render_template(
+        'prizes-svatby.html',
+        title=u'Ceny focení - Exteriér',
+        year=datetime.now().year,
+    )
+
+
 
 @app.route('/about')
 @required_roles('Admin')
@@ -93,32 +127,51 @@ def logout():
 @app.route('/gallery/<cat>/<subcat>/<int:page>')
 def gallery(cat, subcat=None, page=1):
     category = Category.query.filter_by(name = cat).first()
-    subcategories = []
+    if(category==None):
+        return redirect(url_for('index'))
+    
     title = category.fullname
+    subcategories = []
+    tmp_subcategories = []
+    phs = Photo.query.filter_by(category_id = category.id, active=True).all()
+    for p in phs:
+        if(p.subcategory not in tmp_subcategories):
+            tmp_subcategories.append(p.subcategory)
     if subcat:
         subcategory = Subcategory.query.filter_by(name = subcat).first()
-        phs = Photo.query.filter_by(category_id = category.id, subcategory_id = subcategory.id).all()
+        phs = Photo.query.filter_by(category_id = category.id, subcategory_id = subcategory.id, active=True).all()
         title = title + ' - ' + subcategory.fullname
-    else:
-        phs = Photo.query.filter_by(category_id = category.id).paginate(page, POSTS_PER_PAGE, False).items
     photos = []
-    tmp = []
+  
+    # sort Photos
+    nonfeatured = 0
+    for i in range(len(phs)):
+        p = phs[i] 
+        if not p.featured:
+            nonfeatured = nonfeatured + 1
+        else:
+            mod = nonfeatured % 3
+            if(mod != 0):
+                f = phs.pop(i)
+                phs.insert(i-mod, f)
+            nonfeatured = 0
     for p in phs:
-        if p.active:
-            if(p.subcategory not in tmp):
-                tmp.append(p.subcategory)
-            photos.append({'filename': p.filename, 'filepath': p.filepath, 'featured': p.featured})
-    if not subcat:
-        for t in tmp:
+        photos.append({'filename': p.filename, 'filepath': p.filepath, 'featured': p.featured})
+    for t in tmp_subcategories:
             subcategories.append({'fullname': t.fullname, 'name': t.name})
-    return render_template('gallery.html', photos=photos, category=category.name, subcategories=subcategories, title=title, year=datetime.now().year)
+
+    return render_template('gallery.html', photos=photos, category=category, subcategories=subcategories, title=title, year=datetime.now().year)
 
 @app.route('/admin/gallery/add', methods=['GET', 'POST'])
 @login_required
 @required_roles('Admin')
 def add_to_gallery():
-    #photo_path = url_for('static', filename='photo/full', _external=True)
-    photo_path = "\\Work\\Web\\fotosram\\AtelierApp\\AtelierApp\\AtelierApp\\static\\photo\\full"
+    photo_path = url_for('static', filename='photo/full', _external=True)
+    photo_path = photo_path[7:]
+    flash(photo_path)
+    flash(listdir(photo_path))
+
+    #photo_path = "\\Work\\Web\\fotosram\\AtelierApp\\AtelierApp\\AtelierApp\\static\\photo\\full"
     files = [f for f in listdir(photo_path) if isfile(join(photo_path, f))] # list of files in directory
     photos = Photo.query.all()  # list of photos in database
     photofiles = [p.filename for p in photos]   # list of filenames from photos

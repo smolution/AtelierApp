@@ -84,6 +84,7 @@
     <Content Include="AtelierApp\static\css\bootstrap.css.map" />
     <Content Include="AtelierApp\static\css\bootstrap.min.css" />
     <Content Include="AtelierApp\static\css\bootstrap.min.css.map" />
+    <Content Include="AtelierApp\static\css\style.css" />
     <Content Include="AtelierApp\static\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="AtelierApp\static\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="AtelierApp\static\fonts\glyphicons-halflings-regular.ttf" />
@@ -111,6 +112,9 @@
     <Content Include="AtelierApp\templates\flash.html" />
     <Content Include="AtelierApp\templates\gallery.html" />
     <Content Include="AtelierApp\templates\login.html" />
+    <Content Include="AtelierApp\templates\prizes-exterier.html" />
+    <Content Include="AtelierApp\templates\prizes-interier.html" />
+    <Content Include="AtelierApp\templates\prizes-svatby.html" />
     <Content Include="AtelierApp\templates\prizes.html" />
     <Content Include="requirements.txt" />
     <Content Include="AtelierApp\templates\about.html" />

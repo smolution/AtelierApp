@@ -13,7 +13,7 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField('Remember_me', default = False)
 
 class ContactForm(FlaskForm):
-    email = StringField(u'Email', validators=[DataRequired(u'Uveďte prosím Vaši emailovou adresu, abychom Vás mohli kontaktovat.'), Email()])
+    email = StringField(u'Email', validators=[DataRequired(u'Uveďte prosím Vaši emailovou adresu, abychom Vás mohli kontaktovat.'), Email(u'Uveďte prosím email ve správném formátu.')])
     name = StringField(u'Jméno', validators=[DataRequired(u'Vaše jméno, prosím'), Length(min=3)])
     surname = StringField(u'Příjmení', validators=[DataRequired(u'Vaše příjmení'), Length(min=3)])
     telephone = StringField(u'Telefon', validators=[DataRequired(u'Vyplňte prosím Vaše telefonní číslo.'), Length(min=9)])
